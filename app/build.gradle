@@ -1,0 +1,83 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.google.gms.google-services'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "com.veldan.test_firebaserealtime"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        dataBinding true
+        viewBinding true
+    }
+    sourceSets {
+        main {
+            res.srcDirs = [
+                    'src/main/res',
+                    'src/main/res/global',
+                    'src/main/res/global/navigations',
+                    'src/main/res/global/valueses',
+                    'src/main/res/global/mipmaps',
+                    'src/main/res/global/layouts',
+                    'src/main/res/global/drawables',
+                    'src/main/res/screens',
+                    'src/main/res/screens/task_list',
+            ]
+        }
+    }
+}
+
+dependencies {
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$version_kotlin"
+    implementation 'androidx.core:core-ktx:1.3.2'
+
+    // AppCompat
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+
+    // Material
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    // Tests
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    // ConstraintLayout
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+
+    // Firebase
+    implementation platform("com.google.firebase:firebase-bom:$version_firebase")
+    implementation 'com.google.firebase:firebase-analytics-ktx'         // Analytics
+    implementation 'com.google.firebase:firebase-database-ktx'          // Realtime
+
+    // Navigation
+    implementation "androidx.navigation:navigation-fragment-ktx:$version_navigation"
+}
