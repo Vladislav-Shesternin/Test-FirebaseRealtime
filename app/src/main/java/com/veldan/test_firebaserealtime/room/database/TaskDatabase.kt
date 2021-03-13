@@ -5,10 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.veldan.test_firebaserealtime.room.dao.TaskDao
-import com.veldan.test_firebaserealtime.room.models.TaskModel
+import com.veldan.test_firebaserealtime.room.models.TaskModelRoom
 
 @Database(
-    entities = [TaskModel::class],
+    entities = [TaskModelRoom::class],
     version = 1,
     exportSchema = false
 )

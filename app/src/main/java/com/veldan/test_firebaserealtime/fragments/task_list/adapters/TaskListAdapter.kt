@@ -7,18 +7,18 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.veldan.test_firebaserealtime.databinding.ItemTaskListBinding
-import com.veldan.test_firebaserealtime.fragments.task_list.models.TaskModel
+import com.veldan.test_firebaserealtime.fragments.task_list.models.TaskModelDomain
 
 /**
  * [TaskDiffCallback]
  *
  * */
-class TaskDiffCallback : DiffUtil.ItemCallback<TaskModel>() {
-    override fun areItemsTheSame(oldItem: TaskModel, newItem: TaskModel): Boolean {
+class TaskDiffCallback : DiffUtil.ItemCallback<TaskModelDomain>() {
+    override fun areItemsTheSame(oldItem: TaskModelDomain, newItem: TaskModelDomain): Boolean {
         return oldItem === newItem
     }
 
-    override fun areContentsTheSame(oldItem: TaskModel, newItem: TaskModel): Boolean {
+    override fun areContentsTheSame(oldItem: TaskModelDomain, newItem: TaskModelDomain): Boolean {
         return oldItem == newItem
     }
 
@@ -27,7 +27,7 @@ class TaskDiffCallback : DiffUtil.ItemCallback<TaskModel>() {
 /**
  * [TaskListAdapter]
  * */
-class TaskListAdapter : ListAdapter<TaskModel, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
+class TaskListAdapter : ListAdapter<TaskModelDomain, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         return TaskViewHolder.from(parent)
@@ -53,7 +53,7 @@ class TaskListAdapter : ListAdapter<TaskModel, TaskListAdapter.TaskViewHolder>(T
             }
         }
 
-        fun bind(task: TaskModel) {
+        fun bind(task: TaskModelDomain) {
 
             binding.also { item ->
                 item.etTask.setText(task.task)

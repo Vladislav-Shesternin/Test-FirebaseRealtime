@@ -4,15 +4,15 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.veldan.test_firebaserealtime.room.models.TaskModel
+import com.veldan.test_firebaserealtime.room.models.TaskModelRoom
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAll(taskList: List<TaskModel>)
+    suspend fun insertAllTasks(taskList: List<TaskModelRoom>)
 
     @Query("SELECT * FROM task_table")
-    fun getAllTask(): Flow<List<TaskModel>>
+    fun getAllTasks(): Flow<List<TaskModelRoom>>
 }

@@ -1,22 +1,20 @@
 package com.veldan.test_firebaserealtime.fragments.task_list
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.*
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.common.api.internal.LifecycleActivity
-import com.google.android.gms.common.api.internal.LifecycleFragment
-import com.google.android.gms.tasks.Task
-import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.veldan.test_firebaserealtime.databinding.FragmentTaskListBinding
 import com.veldan.test_firebaserealtime.fragments.task_list.adapters.TaskListAdapter
-import com.veldan.test_firebaserealtime.fragments.task_list.models.EndDate
-import com.veldan.test_firebaserealtime.fragments.task_list.models.StartDate
-import com.veldan.test_firebaserealtime.fragments.task_list.models.TaskModel
+import com.veldan.test_firebaserealtime.fragments.task_list.view_models.TaskViewModel
+import com.veldan.test_firebaserealtime.fragments.task_list.view_models.TaskViewModelFactory
+import com.veldan.test_firebaserealtime.room.dao.TaskDao
+import com.veldan.test_firebaserealtime.room.database.TaskDatabase
 
 class TaskListFragment : Fragment() {
     private val TAG = this::class.simpleName
@@ -28,11 +26,17 @@ class TaskListFragment : Fragment() {
     private lateinit var database: FirebaseDatabase
     private lateinit var reference: DatabaseReference
 
+    //Room DAO
+    private lateinit var taskDao: TaskDao
+
+    // ViewModels
+    private lateinit var taskViewModel: TaskViewModel
+
+    // Adapters
+    private lateinit var adapter: TaskListAdapter
+
     // Components UI
     private lateinit var rvTaskList: RecyclerView
-
-    // Components
-    private lateinit var adapter: TaskListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,51 +46,65 @@ class TaskListFragment : Fragment() {
 
         initBinding()
         initFirebase()
-        initAdapters()
+        initRoomDao()
 
         return binding.root
     }
 
+    // ------------------------------------------------------------| Binding |
     // {init}: Binding
     private fun initBinding() {
         binding = FragmentTaskListBinding.inflate(layoutInflater)
-        initComponentsUI()
+        initComponentsUI() // <<< Components UI
     }
 
+    // ------------------------------------------------------------| Components UI |
     // {init}: Components UI
     private fun initComponentsUI() {
         binding.also {
             rvTaskList = it.rvTaskList
         }
+        initAdapters() // <<< Adapters
     }
 
+    // ------------------------------------------------------------| RecyclerView Adapters |
+    // {init}: Adapters
+    private fun initAdapters() {
+        initTaskListAdapter()
+    }
+
+    // {init fun}: TaskListAdapter
+    private fun initTaskListAdapter() {
+        adapter = TaskListAdapter()
+        rvTaskList.adapter = adapter
+    }
+
+    // ------------------------------------------------------------| Firebase |
     // {init}: Firebase
     private fun initFirebase() {
         database = FirebaseDatabase.getInstance()
         reference = database.getReference("Tasks")
     }
 
-    // {init}: Adapters
-    private fun initAdapters() {
-        initTaskListAdapter()
+    // ------------------------------------------------------------| Room Dao |
+    // {init}:
+    private fun initRoomDao() {
+        val application = requireNotNull(activity).application
+        TaskDatabase.getDatabase(application).also { base ->
+            taskDao = base.taskDao
+        }
+        initViewModels() // <<< ViewModels
     }
 
-    // {init}: TaskListAdapter
-    private fun initTaskListAdapter() {
-        adapter = TaskListAdapter()
-        rvTaskList.adapter = adapter
+    // ------------------------------------------------------------| ViewModels |
+    // {init}: ViewModels
+    private fun initViewModels() {
+        initTaskViewModel()
+    }
 
-        reference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val value = snapshot.getValue(TaskModel::class.java)
-                adapter.submitList(listOf(value))
-                Log.i(TAG, "onDataChange: $value")
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.i(TAG, "onCancelled: ${error.message}")
-            }
-
-        })
+    // {init fun}: TaskViewModel
+    private fun initTaskViewModel() {
+        val factoryTaskViewModel = TaskViewModelFactory(reference, taskDao)
+        taskViewModel = ViewModelProvider(this, factoryTaskViewModel).get(TaskViewModel::class.java)
     }
 }
