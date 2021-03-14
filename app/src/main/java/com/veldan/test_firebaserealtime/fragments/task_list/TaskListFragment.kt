@@ -1,22 +1,28 @@
 package com.veldan.test_firebaserealtime.fragments.task_list
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchUIUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.veldan.test_firebaserealtime.databinding.FragmentTaskListBinding
 import com.veldan.test_firebaserealtime.fragments.task_list.adapters.TaskListAdapter
+import com.veldan.test_firebaserealtime.fragments.task_list.models.TaskModelDomain
+import com.veldan.test_firebaserealtime.fragments.task_list.models.asTaskModelRoom
 import com.veldan.test_firebaserealtime.fragments.task_list.view_models.TaskViewModel
 import com.veldan.test_firebaserealtime.fragments.task_list.view_models.TaskViewModelFactory
 import com.veldan.test_firebaserealtime.room.dao.TaskDao
 import com.veldan.test_firebaserealtime.room.database.TaskDatabase
 import com.veldan.test_firebaserealtime.room.models.asTaskModelDomain
+import com.veldan.test_firebaserealtime.util.SwipeToDelete
 
 class TaskListFragment : Fragment() {
     private val TAG = this::class.simpleName
@@ -111,5 +117,16 @@ class TaskListFragment : Fragment() {
         taskViewModel.liveTaskList.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it.asTaskModelDomain())
         })
+
+        val itemTouchHelper = ItemTouchHelper(SwipeToDelete {
+            val task: TaskModelDomain = adapter.currentList[it]
+            taskViewModel.apply {
+                // Delete from Room
+                deleteTask(task.asTaskModelRoom())
+                // Remove from Firebase
+                removeTask(task.id)
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(rvTaskList)
     }
 }

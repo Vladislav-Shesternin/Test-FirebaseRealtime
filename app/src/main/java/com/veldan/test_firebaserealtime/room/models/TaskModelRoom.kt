@@ -9,6 +9,7 @@ import com.veldan.test_firebaserealtime.util.Date
 @Entity(tableName = "task_table")
 data class TaskModelRoom(
     @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = "id")
     val id: String,
 
     @ColumnInfo(name = "task")
@@ -39,6 +40,7 @@ data class EndDateRoom(
 fun List<TaskModelRoom>.asTaskModelDomain(): List<TaskModelDomain> {
     return this.map {
         TaskModelDomain(
+            id = it.id,
             task = it.task,
             startDate = it.startDate.asStartDateDomain(),
             endDate = it.endDate.asEndDateDomain()

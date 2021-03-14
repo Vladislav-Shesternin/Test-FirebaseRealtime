@@ -26,6 +26,16 @@ data class EndDateDomain(
 ) : Date()
 
 // ------------------------------------------------------------| Extension functions of: [TaskModelDomain]  |
+// {exs fun}: . externalFunctionName
+fun TaskModelDomain.asTaskModelRoom(): TaskModelRoom {
+    return TaskModelRoom(
+        id = id,
+        task = task,
+        startDate = startDate!!.asStartDateRoom(),
+        endDate = endDate!!.asEndDateRoom()
+    )
+}
+
 // {ext fun} .asTaskModelRoom
 fun List<TaskModelDomain>.asTaskModelRoom(): List<TaskModelRoom> {
     return this.map {

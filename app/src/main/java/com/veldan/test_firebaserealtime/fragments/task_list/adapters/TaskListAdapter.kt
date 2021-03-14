@@ -3,6 +3,7 @@ package com.veldan.test_firebaserealtime.fragments.task_list.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +28,8 @@ class TaskDiffCallback : DiffUtil.ItemCallback<TaskModelDomain>() {
 /**
  * [TaskListAdapter]
  * */
-class TaskListAdapter : ListAdapter<TaskModelDomain, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
+class TaskListAdapter :
+    ListAdapter<TaskModelDomain, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         return TaskViewHolder.from(parent)

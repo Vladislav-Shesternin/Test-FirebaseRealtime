@@ -1,15 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-
+<?xml version="1.0" encoding="utf-8"?><!--FOR UPDATE-->
+<!--<layout>-->
+<!--    <data>-->
+<!--        <variable-->
+<!--            name="taskViewModel"-->
+<!--            type="com.veldan.test_firebaserealtime.fragments.task_list.view_models.TaskViewModel" />-->
+<!--    </data>-->
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="130dp"
     android:layout_margin="10dp"
-    app:cardBackgroundColor="@color/purple_200"
+    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="20dp"
     app:cardElevation="10dp"
     tools:layout_gravity="center">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="100dp"
+        android:background="?attr/selectableItemBackground" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -59,11 +72,11 @@
             android:id="@+id/et_start_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:imeOptions="actionNext"
             android:inputType="date"
             android:maxLength="4"
-            android:text="2000"
             android:nextFocusRight="@id/et_end_day"
-            android:imeOptions="actionNext"
+            android:text="2000"
             android:textSize="20sp"
             tools:ignore="MissingConstraints" />
 
@@ -135,11 +148,11 @@
             android:id="@+id/et_end_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
             android:inputType="date"
             android:maxLength="4"
             android:text="2021"
             android:textSize="20sp"
-            android:imeOptions="actionDone"
             tools:ignore="MissingConstraints" />
 
         <androidx.constraintlayout.helper.widget.Flow
@@ -175,4 +188,4 @@
             app:layout_constraintTop_toTopOf="@id/et_end_month" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+</androidx.cardview.widget.CardView><!--</layout>-->
