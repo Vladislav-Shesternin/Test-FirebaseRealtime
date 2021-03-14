@@ -1,19 +1,17 @@
 package com.veldan.test_firebaserealtime.fragments.task_list.view_models
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
-import com.veldan.test_firebaserealtime.fragments.task_list.models.EndDate
-import com.veldan.test_firebaserealtime.fragments.task_list.models.StartDate
-import com.veldan.test_firebaserealtime.fragments.task_list.models.TaskModelDomain
+import com.google.firebase.database.*
+import com.veldan.test_firebaserealtime.fragments.task_list.models.*
 import com.veldan.test_firebaserealtime.room.dao.TaskDao
 import com.veldan.test_firebaserealtime.room.models.TaskModelRoom
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.lang.IllegalArgumentException
 
 class TaskViewModel(
     private val reference: DatabaseReference,
@@ -22,17 +20,30 @@ class TaskViewModel(
 
     private val TAG = this::class.simpleName
 
+    val liveTaskList: LiveData<List<TaskModelRoom>>
+        get() = taskDao.getAllTasks()
+
     init {
-        viewModelScope.launch {
-            initFirebaseAddListener()
-        }
+        initFirebaseAddListener()
     }
 
-    // {suspend init}: Firebase AddListener
-    private suspend fun initFirebaseAddListener() {
+    // ------------------------------------------------------------| Firebase Listeners |
+    // {init}: Firebase AddListener
+    private fun initFirebaseAddListener() {
         reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                val children =
+                    requireNotNull(snapshot.children) { "The Reference = NULL" }
 
+                val listTaskModelDomain: List<TaskModelDomain> = children.map { data ->
+                    val taskModelDomain = requireNotNull(data.getValue(TaskModelDomain::class.java)) {
+                        "This DataSnapshot = NULL"
+                    }
+                    taskModelDomain.apply { id = data.key!!}
+                }
+
+                if (listTaskModelDomain.isEmpty()) deleteAllTasks()
+                else insertAllTasks(listTaskModelDomain.asTaskModelRoom())
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -42,8 +53,29 @@ class TaskViewModel(
         })
     }
 
-    // {fun}: functionName
-    private suspend fun insertAllTasks(taskList: List<TaskModelRoom>) {
+    // ------------------------------------------------------------| fun Room Dao |
+    // {fun}: insertAllTasks
+    private fun insertAllTasks(taskList: List<TaskModelRoom>) {
+        viewModelScope.launch {
+            _insertAllTasks(taskList)
+        }
+    }
+
+    // {fun}: deleteAllTasks
+    private fun deleteAllTasks() {
+        viewModelScope.launch {
+            _deleteAllTasks()
+        }
+    }
+
+    // ------------------------------------------------------------| suspend fun Room Dao |
+    // {suspend fun}: insertAllTasks
+    private suspend fun _insertAllTasks(taskList: List<TaskModelRoom>) {
         taskDao.insertAllTasks(taskList)
+    }
+
+    // {suspend fun}: deleteAllTasks
+    private suspend fun _deleteAllTasks() {
+        taskDao.deleteAllTasks()
     }
 }

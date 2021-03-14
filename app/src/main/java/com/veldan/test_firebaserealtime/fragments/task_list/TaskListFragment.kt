@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.DatabaseReference
@@ -15,6 +16,7 @@ import com.veldan.test_firebaserealtime.fragments.task_list.view_models.TaskView
 import com.veldan.test_firebaserealtime.fragments.task_list.view_models.TaskViewModelFactory
 import com.veldan.test_firebaserealtime.room.dao.TaskDao
 import com.veldan.test_firebaserealtime.room.database.TaskDatabase
+import com.veldan.test_firebaserealtime.room.models.asTaskModelDomain
 
 class TaskListFragment : Fragment() {
     private val TAG = this::class.simpleName
@@ -64,19 +66,6 @@ class TaskListFragment : Fragment() {
         binding.also {
             rvTaskList = it.rvTaskList
         }
-        initAdapters() // <<< Adapters
-    }
-
-    // ------------------------------------------------------------| RecyclerView Adapters |
-    // {init}: Adapters
-    private fun initAdapters() {
-        initTaskListAdapter()
-    }
-
-    // {init fun}: TaskListAdapter
-    private fun initTaskListAdapter() {
-        adapter = TaskListAdapter()
-        rvTaskList.adapter = adapter
     }
 
     // ------------------------------------------------------------| Firebase |
@@ -100,11 +89,27 @@ class TaskListFragment : Fragment() {
     // {init}: ViewModels
     private fun initViewModels() {
         initTaskViewModel()
+        initAdapters() // <<< Adapters
     }
 
     // {init fun}: TaskViewModel
     private fun initTaskViewModel() {
         val factoryTaskViewModel = TaskViewModelFactory(reference, taskDao)
         taskViewModel = ViewModelProvider(this, factoryTaskViewModel).get(TaskViewModel::class.java)
+    }
+
+    // ------------------------------------------------------------| RecyclerView Adapters |
+    // {init}: Adapters
+    private fun initAdapters() {
+        initTaskListAdapter()
+    }
+
+    // {init fun}: TaskListAdapter
+    private fun initTaskListAdapter() {
+        adapter = TaskListAdapter()
+        rvTaskList.adapter = adapter
+        taskViewModel.liveTaskList.observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it.asTaskModelDomain())
+        })
     }
 }

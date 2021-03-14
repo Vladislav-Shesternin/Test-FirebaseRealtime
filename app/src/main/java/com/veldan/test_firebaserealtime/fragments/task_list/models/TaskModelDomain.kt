@@ -1,46 +1,47 @@
 package com.veldan.test_firebaserealtime.fragments.task_list.models
 
+import com.veldan.test_firebaserealtime.room.models.EndDateRoom
+import com.veldan.test_firebaserealtime.room.models.StartDateRoom
 import com.veldan.test_firebaserealtime.room.models.TaskModelRoom
+import com.veldan.test_firebaserealtime.util.Date
 
 data class TaskModelDomain(
+    var id: String = "",
     val task: String = "",
-    val startDate: StartDate? = null,
-    val endDate: EndDate? = null,
+    val startDate: StartDateDomain? = null,
+    val endDate: EndDateDomain? = null,
 )
 
-/**
- * Сlasses included in parameters [TaskModelDomain].
- **/
-data class StartDate(
+// ------------------------------------------------------------| Classes parameters of: [TaskModelDomain] |
+data class StartDateDomain(
     override val day: String = "",
     override val month: String = "",
     override val year: String = ""
 ) : Date()
 
-data class EndDate(
+data class EndDateDomain(
     override val day: String = "",
     override val month: String = "",
     override val year: String = ""
 ) : Date()
 
-abstract class Date {
-    abstract val day: String
-    abstract val month: String
-    abstract val year: String
-}
-
-/**
- * [TaskModelDomain] extension functions.
- */
+// ------------------------------------------------------------| Extension functions of: [TaskModelDomain]  |
 // {ext fun} .asTaskModelRoom
-fun List<TaskModelDomain>.asTaskModelRoom(id: String): List<TaskModelRoom> {
+fun List<TaskModelDomain>.asTaskModelRoom(): List<TaskModelRoom> {
     return this.map {
         TaskModelRoom(
-            id = id,
+            id = it.id,
             task = it.task,
-//            startDate = it.startDate!!,
-//            endDate = it.endDate!!,
+            startDate = it.startDate!!.asStartDateRoom(),
+            endDate = it.endDate!!.asEndDateRoom()
         )
     }
 }
+
+// {exs fun}: .asStartDateRoom
+private fun StartDateDomain.asStartDateRoom() = StartDateRoom(day, month, year)
+
+// {exs fun}: .asEndDateRoom
+private fun EndDateDomain.asEndDateRoom() = EndDateRoom(day, month, year)
+
 

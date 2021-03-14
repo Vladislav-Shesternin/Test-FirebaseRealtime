@@ -9,7 +9,7 @@ import com.veldan.test_firebaserealtime.room.models.TaskModelRoom
 
 @Database(
     entities = [TaskModelRoom::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class TaskDatabase : RoomDatabase() {
@@ -26,7 +26,9 @@ abstract class TaskDatabase : RoomDatabase() {
                     context.applicationContext,
                     TaskDatabase::class.java,
                     "task_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
